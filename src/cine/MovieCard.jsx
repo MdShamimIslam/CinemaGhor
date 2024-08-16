@@ -3,11 +3,12 @@ import { getImgUrl } from "../utils/options";
 import Ratings from "./Ratings";
 import MovieModal from "./MovieModal";
 import { MovieContext } from "../context";
+import { toast } from 'react-toastify';
 
 const MovieCard = ({ movie }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const {cartData,setCartData} = useContext(MovieContext);
+  const {state,dispatch} = useContext(MovieContext);
 
   const handleModalClose = () => {
     setShowModal(false);
@@ -21,12 +22,19 @@ const MovieCard = ({ movie }) => {
   const handleAddToCart = (e,movie)=>{
     e.stopPropagation();
 
-    const found = cartData.find(item => item.id === movie.id);
+    const found = state.cartData.find(item => item.id === movie.id);
 
     if (!found) {
-        setCartData([...cartData,movie])
+        dispatch({
+          type:"ADD_TO_CART",
+          payload:{
+            ...movie
+          }
+        })
+        toast.success(`${movie.title} added Successfully`)
+
     }else{
-        console.error(`This movie ${movie.title} already added !!`)
+      toast.error(`This movie ${movie.title} already added !!`)
     }
 
   }
@@ -40,7 +48,7 @@ const MovieCard = ({ movie }) => {
       <figure className="p-4 border border-black/10 shadow-sm dark:border-white/10 rounded-xl">
         <a href="#" onClick={() => handleMovieSelection(movie)}>
           <img
-            className="w-full object-cover"
+            className="w-full h-[500px] object-cover"
             src={getImgUrl(movie.cover)}
             alt={movie.title}
           />
@@ -50,13 +58,13 @@ const MovieCard = ({ movie }) => {
             <div className="flex items-center space-x-1 mb-5">
               <Ratings value={movie.rating} />
             </div>
-            <a
+            <button
               className="bg-primary rounded-lg py-2 px-5 flex items-center justify-center gap-2 text-[#171923] font-semibold text-sm"
               href="#"
               onClick={(e)=> handleAddToCart(e,movie)}
             >
               <span>${movie.price} | Add to Cart</span>
-            </a>
+            </button>
           </figcaption>
         </a>
       </figure>

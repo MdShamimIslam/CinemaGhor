@@ -3,14 +3,18 @@ import { MovieContext } from "../context";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 import { getImgUrl } from "../utils/options";
+import { toast } from "react-toastify";
 
 
 const CartDetails = ({ onClose }) => {
-  const { cartData, setCartData } = useContext(MovieContext);
+  const { state, dispatch } = useContext(MovieContext);
 
-  const handleCartDelete = (cartId)=>{
-    const filteredCartData = cartData.filter(item => item.id !== cartId);
-    setCartData(filteredCartData);
+  const handleCartDelete = (item)=>{
+    dispatch({
+      type:"REMOVE_FROM_CART",
+      payload:item
+    })
+    toast.success(`${item.title} Deleted successfully`)
   }
 
   return (
@@ -20,9 +24,9 @@ const CartDetails = ({ onClose }) => {
           <h2 className="text-2xl lg:text-[30px] mb-10 font-bold">
             My Carts
           </h2>
-          <div className="space-y-8 lg:space-y-12 max-h-[450px] overflow-auto mb-10 lg:mb-14">
+          <div className={`space-y-8 lg:space-y-12 max-h-[450px] mb-10 lg:mb-14`}>
           {
-                   cartData.length > 0 ? cartData.map(item => 
+                   state.cartData.length > 0 ? state.cartData.map(item => 
                    <div key={item.id} className="grid grid-cols-[1fr_auto] gap-4">
                 
                     <div className="flex items-center gap-4">
@@ -40,7 +44,7 @@ const CartDetails = ({ onClose }) => {
                       </div>
                     </div>
                     <div className="flex justify-between gap-4 items-center">
-                      <button onClick={()=>handleCartDelete(item.id)} className="bg-[#D42967] rounded-md p-2 md:px-4 inline-flex items-center space-x-2 text-white">
+                      <button onClick={()=>handleCartDelete(item)} className="bg-[#D42967] rounded-md p-2 md:px-4 inline-flex items-center space-x-2 text-white">
                       <RiDeleteBin6Line />
                         <span className="max-md:hidden">Remove</span>
                       </button>
